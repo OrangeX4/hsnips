@@ -158,7 +158,15 @@ export function activate(context: vscode.ExtensionContext) {
         text = text.replace(/```[\s\S]+?```/g, '')
         text = text.replace(/`[^`\n]+`/g, '')
         text = text.replace(/<!--[\s\S]+?-->/g, '')
-        const reg = /(\\begin\{align\*\}[^\$]*?\\end\{align\*\})|(\\begin\{align\}[^\$]*?\\end\{align\})|(\\begin\{equation\*\}[^\$]*?\\end\{equation\*\})|(\\begin\{equation\}[^\$]*?\\end\{equation\})|(\\\[[^\$]*?\\\])|(\\\([^\$]*?\\\))|(\$\$[^\$]+\$\$)|(\$[^\$]+?\$)/g
+        let reg = `/`
+        // sequencially add all math environments to the reg, the following is an example of the reg
+        // const reg = /(\\begin\{align\*\}[^\$]*?\\end\{align\*\})|(\\begin\{align\}[^\$]*?\\end\{align\})|(\\begin\{equation\*\}[^\$]*?\\end\{equation\*\})|(\\begin\{equation\}[^\$]*?\\end\{equation\})|(\\\[[^\$]*?\\\])|(\\\([^\$]*?\\\))|(\$\$[^\$]+\$\$)|(\$[^\$]+?\$)/g
+        let MATH_ENVS = ['align\*', 'align', 'equation\*', 'equation', 'split', 'gather\*', 'gather', 'multline\*', 'multline', 'aligned', 'alignedat', 'flalign\*', 'flalign', 'alignat', 'CD', 'matrix', 'bmatrix', 'Bmatrix', 'vmatrix', 'Vmatrix', 'pmatrix', 'smallmatrix', 'cases', 'array', 'eqnarray\*', 'eqnarray', 'xalignat', 'xalignat\*']
+        for (let env of MATH_ENVS) {
+            reg += `(\\\\begin\\{${env}\\}[^\\$]*?\\\\end\\{${env}\\})|`
+        }
+        reg += `(\\\[[^\$]*?\\\])|(\\\([^\$]*?\\\))|(\$\$[^\$]+\$\$)|(\$[^\$]+?\$)/g`
+
         text = text.replace(reg, '')
         if (text.indexOf('$') == -1 && text.indexOf('\\(') == -1 && text.indexOf('\\[') == -1 && text.indexOf('\\begin{equation}') == -1 && text.indexOf('\\begin{equation*}') == -1 && text.indexOf('\\begin{align}') == -1 && text.indexOf('\\begin{align*}') == -1) {
             return false
