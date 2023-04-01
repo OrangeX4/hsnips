@@ -159,8 +159,6 @@ export function activate(context: vscode.ExtensionContext) {
         text = text.replace(/`[^`\n]+`/g, '')
         text = text.replace(/<!--[\s\S]+?-->/g, '')
         let reg = `/`
-        // sequencially add all math environments to the reg, the following is an example of the reg
-        // const reg = /(\\begin\{align\*\}[^\$]*?\\end\{align\*\})|(\\begin\{align\}[^\$]*?\\end\{align\})|(\\begin\{equation\*\}[^\$]*?\\end\{equation\*\})|(\\begin\{equation\}[^\$]*?\\end\{equation\})|(\\\[[^\$]*?\\\])|(\\\([^\$]*?\\\))|(\$\$[^\$]+\$\$)|(\$[^\$]+?\$)/g
         let MATH_ENVS = ['align\*', 'align', 'equation\*', 'equation', 'split', 'gather\*', 'gather', 'multline\*', 'multline', 'aligned', 'alignedat', 'flalign\*', 'flalign', 'alignat', 'CD', 'matrix', 'bmatrix', 'Bmatrix', 'vmatrix', 'Vmatrix', 'pmatrix', 'smallmatrix', 'cases', 'array', 'eqnarray\*', 'eqnarray', 'xalignat', 'xalignat\*']
         for (let env of MATH_ENVS) {
             reg += `(\\\\begin\\{${env}\\}[^\\$]*?\\\\end\\{${env}\\})|`
