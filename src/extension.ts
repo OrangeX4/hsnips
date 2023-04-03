@@ -162,7 +162,7 @@ export function activate(context: vscode.ExtensionContext) {
         let string = String.raw`/(\\\[[^\$]*?\\\])|(\\\([^\$]*?\\\))|(\$\$[^\$]+\$\$)|(\$[^\$]+?\$)`
         for (let env of ENV_NAMES) {
             const raw_env = String.raw`${env.replace(/\*/g, '\\*')}`
-            string += `|(${String.raw`\\begin\{${raw_env}\}[^\$]*?\\end\{${raw_env}\}`})`
+            string += String.raw`|(\\begin\{${raw_env}\}[^\$]*?\\end\{${raw_env}\})`
         }
         text = text.replace(RegExp(string, 'g'), '')
         if (text.indexOf('$') == -1 && text.indexOf('\\(') == -1 && text.indexOf('\\[') == -1) {
@@ -172,7 +172,7 @@ export function activate(context: vscode.ExtensionContext) {
                         break find
                     }
                 }
-                    return false
+                return false
             }
         }
         const txt_reg = /(\\text{[^}]+})|(\\operatorname{[^}\n]+})|(\\mathrm{[^}\n]+})/g
