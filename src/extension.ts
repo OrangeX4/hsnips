@@ -158,18 +158,29 @@ export function activate(context: vscode.ExtensionContext) {
         text = text.replace(/```[\s\S]+?```/g, '')
         text = text.replace(/`[^`\n]+`/g, '')
         text = text.replace(/<!--[\s\S]+?-->/g, '')
-        const reg = /(\\begin\{align\*\}[^\$]*?\\end\{align\*\})|(\\begin\{align\}[^\$]*?\\end\{align\})|(\\begin\{equation\*\}[^\$]*?\\end\{equation\*\})|(\\begin\{equation\}[^\$]*?\\end\{equation\})|(\\\[[^\$]*?\\\])|(\\\([^\$]*?\\\))|(\$\$[^\$]+\$\$)|(\$[^\$]+?\$)/g
-        text = text.replace(reg, '')
-        if (text.indexOf('$') == -1 && text.indexOf('\\(') == -1 && text.indexOf('\\[') == -1 && text.indexOf('\\begin{equation}') == -1 && text.indexOf('\\begin{equation*}') == -1 && text.indexOf('\\begin{align}') == -1 && text.indexOf('\\begin{align*}') == -1) {
-            return false
-        } else {
-            const txt_reg = /(\\text{[^}]+})|(\\operatorname{[^}\n]+})|(\\mathrm{[^}\n]+})/g
-            text = text.replace(txt_reg, ' ')
-            if (text.indexOf('\\text{') == -1 && text.indexOf('\\operatorname{') == -1 && text.indexOf('\\mathrm{') == -1) {
-                return true
-            } else {
+        const ENV_NAMES = ['align*', 'align', 'equation*', 'equation', 'split', 'gather*', 'gather', 'multline*', 'multline', 'aligned', 'alignedat', 'flalign*', 'flalign', 'alignat', 'CD', 'matrix', 'bmatrix', 'Bmatrix', 'vmatrix', 'Vmatrix', 'pmatrix', 'smallmatrix', 'cases', 'array', 'eqnarray*', 'eqnarray', 'xalignat', 'xalignat*']
+        let string = String.raw`/(\\\[[^\$]*?\\\])|(\\\([^\$]*?\\\))|(\$\$[^\$]+\$\$)|(\$[^\$]+?\$)`
+        for (let env of ENV_NAMES) {
+            const raw_env = String.raw`${env.replace(/\*/g, '\\*')}`
+            string += String.raw`|(\\begin\{${raw_env}\}[^\$]*?\\end\{${raw_env}\})`
+        }
+        text = text.replace(RegExp(string, 'g'), '')
+        if (text.indexOf('$') == -1 && text.indexOf('\\(') == -1 && text.indexOf('\\[') == -1) {
+            find: {
+                for (let i = 0; i < ENV_NAMES.length; i++) {
+                    if (text.indexOf('\\begin{' + ENV_NAMES[i] + '}') != -1) {
+                        break find
+                    }
+                }
                 return false
             }
+        }
+        const txt_reg = /(\\text{[^}]+})|(\\operatorname{[^}\n]+})|(\\mathrm{[^}\n]+})/g
+        text = text.replace(txt_reg, ' ')
+        if (text.indexOf('\\text{') == -1 && text.indexOf('\\operatorname{') == -1 && text.indexOf('\\mathrm{') == -1) {
+            return true
+        } else {
+            return false
         }
     }
 
