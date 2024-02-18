@@ -158,7 +158,7 @@ export function activate(context: vscode.ExtensionContext) {
         text = text.replace(/```[\s\S]+?```/g, '')
         text = text.replace(/`[^`\n]+`/g, '')
         text = text.replace(/<!--[\s\S]+?-->/g, '')
-        const ENV_NAMES = ['align*', 'align', 'equation*', 'equation', 'split', 'gather*', 'gather', 'multline*', 'multline', 'aligned', 'alignedat', 'flalign*', 'flalign', 'alignat', 'CD', 'matrix', 'bmatrix', 'Bmatrix', 'vmatrix', 'Vmatrix', 'pmatrix', 'smallmatrix', 'cases', 'array', 'eqnarray*', 'eqnarray', 'xalignat', 'xalignat*']
+        const ENV_NAMES = ['align*', 'align', 'equation*', 'equation', 'gather*', 'gather', 'multline*', 'multline', 'flalign*', 'flalign', 'eqnarray*', 'eqnarray', 'xalignat', 'xalignat*']
         let string = String.raw`/(\\\[[^\$]*?\\\])|(\\\([^\$]*?\\\))|(\$\$[^\$]+\$\$)|(\$[^\$]+?\$)`
         for (let env of ENV_NAMES) {
             const raw_env = String.raw`${env.replace(/\*/g, '\\*')}`
