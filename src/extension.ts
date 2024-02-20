@@ -161,7 +161,7 @@ export function activate(context: vscode.ExtensionContext) {
         const ENV_NAMES = ['align*', 'align', 'equation*', 'equation', 'gather*', 'gather', 'multline*', 'multline', 'flalign*', 'flalign', 'eqnarray*', 'eqnarray', 'xalignat*', 'xalignat']
         const raw_envs = ENV_NAMES.map(env => String.raw`${env.replace(/\*/g, '\\*')}`);
         const env_regex = raw_envs.map(raw_env => String.raw`(\\begin\{${raw_env}\}[^\$]*?\\end\{${raw_env}\})`).join('|');
-        const string = String.raw`/(\\\[[^\$]*?\\\])|(\\\([^\$]*?\\\))|(\$\$[^\$]+\$\$)|(\$[^\$]+?\$)|${env_regex}`;
+        const string = String.raw`(\\\[[^\$]*?\\\])|(\\\([^\$]*?\\\))|(\$\$[^\$]+\$\$)|(\$[^\$]+?\$)|${env_regex}`;
         text = text.replace(RegExp(string, 'g'), '')
         if (text.indexOf('$') == -1 && text.indexOf('\\(') == -1 && text.indexOf('\\[') == -1) {
             find: {
