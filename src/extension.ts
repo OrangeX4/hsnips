@@ -154,17 +154,24 @@ export function activate(context: vscode.ExtensionContext) {
 
     function isMathEnvironment(editor: vscode.TextEditor) {
         let text = editor.document.getText(new vscode.Range(new vscode.Position(0, 0), editor.selection.start))
+        // Remove escaped dollar signs
         text = text.replace(/\\\$/g, ' ')
+        // Remove code blocks and comments
         text = text.replace(/```[\s\S]+?```/g, '')
         text = text.replace(/`[^`\n]+`/g, '')
         text = text.replace(/<!--[\s\S]+?-->/g, '')
-        text = text.replace(/(\$\$[^\$]+\$\$)|(\$[^\$]+?\$)/g, '') // avoid activating math env in cases such as \begin{equation} a = \text{$b$} \end{equation} //math env is activate after the equation
+        // Avoid activating math env in cases like \text{$b$}
+        text = text.replace(/(\$\$[^\$]+\$\$)|(\$[^\$]+?\$)/g, '') 
+        // Handle LaTeX environments that are strictly mathematical
         const reg = /(\\begin\{gather\*\}[^\$]*?\\end\{gather\*\})|(\\begin\{gather\}[^\$]*?\\end\{gather\})|(\\begin\{align\*\}[^\$]*?\\end\{align\*\})|(\\begin\{align\}[^\$]*?\\end\{align\})|(\\begin\{equation\*\}[^\$]*?\\end\{equation\*\})|(\\begin\{equation\}[^\$]*?\\end\{equation\})|(\\\[[^\$]*?\\\])|(\\\([^\$]*?\\\))/g
         text = text.replace(reg, '')
+        // Check if any math environment indicators are present
         if (text.indexOf('$') == -1 && text.indexOf('\\(') == -1 && text.indexOf('\\[') == -1 && text.indexOf('\\begin{equation}') == -1 && text.indexOf('\\begin{equation*}') == -1 && text.indexOf('\\begin{align}') == -1 && text.indexOf('\\begin{align*}') == -1 && text.indexOf('\\begin{gather}') == -1 && text.indexOf('\\begin{gather*}') == -1) {
             return false
         } else {
-            const txt_reg = /(\\text{[^}]+})|(\\operatorname{[^}\n]+})|(\\mathrm{[^}\n]+})/g
+            // Handle text environments inside math environments
+            // const txt_reg = /(\\text{[^}]+})|(\\operatorname{[^}\n]+})|(\\mathrm{[^}\n]+})/g
+            const txt_reg = /(\\text\{[^}]+\})|(\\operatorname\{[^}\n]+\})|(\\mathrm\{[^}\n]+\})|(\\mathds\{[^}\n]+\})/g
             text = text.replace(txt_reg, ' ')
             if (text.indexOf('\\text{') == -1 && text.indexOf('\\operatorname{') == -1 && text.indexOf('\\mathrm{') == -1) {
                 return true
